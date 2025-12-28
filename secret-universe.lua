@@ -29,6 +29,7 @@ local farmSection = mainGui:Section(automationTab, "Auto Farm")
 local teleportSection = mainGui:Section(automationTab, "Teleports")
 local secretSection = mainGui:Section(automationTab, "Secrets")
 local infiniSection = mainGui:Section(automationTab, "Infinitower")
+local puthingSection = mainGui:Section(automationTab, "Puthing Around")
 local unloadSection = mainGui:Section(otherTab, "Unload")
 local debugSection = mainGui:Section(otherTab, "Debug")
 mainGui:CreateSettingsTab()
@@ -36,15 +37,36 @@ mainGui:CreateSettingsTab()
 local coinsESPOn = false
 
 local autoFarm = false
+local bruteForcerPuth = false
 local autoinfini = false
 local obbyTeleportSpeed = 2
 
 local running = true
 
 local obbyStage = 0
+local currentPathNumber = 0
 local autoFarmMethod = "Endless Obby"
 
 local lastTeleport = os.clock()
+
+local pathLetters = {
+	[1] = "S",
+	[2] = "O",
+	[3] = "P",
+	[4] = "Y",
+	[5] = "K",
+	[6] = "X",
+	[7] = "D",
+	[8] = "Q",
+	[9] = "H",
+	[10] = "A",
+	[11] = "R",
+	[12] = "W",
+	[13] = "Z",
+	[14] = "C",
+	[15] = "U",
+	[16] = "T"
+}
 
 mainGui:Checkbox(automationTab, farmSection, "Auto Farm", false, function(state)
 	if state and autoFarmMethod == "Zombie" then
@@ -131,6 +153,10 @@ end, {"Lorem Ipsum", "Post-mortem", "Random Number Generation", "Oracle Attack"}
 
 mainGui:Checkbox(automationTab, infiniSection, "Auto TP Buttons", false, function(state)
 	autoinfini = state
+end)
+
+mainGui:Checkbox(automationTab, puthingSection, "Brute Forcer", false, function(state)
+	bruteForcerPuth = state
 end)
 
 mainGui:Checkbox(otherTab, unloadSection, "Unload", false, function(state)
@@ -268,6 +294,24 @@ while running do
 					continue
 				end
 			end
+			lastTeleport = currentTime
+		end
+	end
+	if bruteForcerPuth then
+		local currentTime = os.clock()
+
+		if currentTime - lastTeleport >= 0.35 then
+			if currentPathNumber >= 16 then
+				player.Character.HumanoidRootPart.Position = Vector3.new(171, 112, -115)
+				currentPathNumber = 0
+			else
+				local randomValue = math.random(1, 16)
+				local pathsInput = workspace.Structures.Paths.InputBricks
+				local position = pathsInput[pathLetters[randomValue]].Position
+				player.Character.HumanoidRootPart.Position = Vector3.new(position.X, position.Y + 2, position.Z)
+				currentPathNumber += 1
+			end
+
 			lastTeleport = currentTime
 		end
 	end
