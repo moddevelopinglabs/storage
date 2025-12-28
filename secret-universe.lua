@@ -105,10 +105,29 @@ mainGui:Choice(automationTab, secretSection, "Collect Secret", {}, function(valu
 		if rainberge then
 			player.Character.HumanoidRootPart.Position = rainberge.Position
 		end
+	elseif secretValue == "Oracle Attack" then
+		local pathsInput = workspace.Structures.Paths.InputBricks
+		player.Character.HumanoidRootPart.Position = pathsInput.C.Position
+		task.wait(0.35)
+		player.Character.HumanoidRootPart.Position = pathsInput.A.Position
+		task.wait(0.35)
+		player.Character.HumanoidRootPart.Position = pathsInput.R.Position
+		task.wait(0.35)
+		player.Character.HumanoidRootPart.Position = pathsInput.P.Position
+		task.wait(0.35)
+		player.Character.HumanoidRootPart.Position = pathsInput.O.Position
+		task.wait(0.35)
+		player.Character.HumanoidRootPart.Position = pathsInput.X.Position
+		task.wait(0.35)
+		player.Character.HumanoidRootPart.Position = pathsInput.Y.Position
+		task.wait(0.35)
+		player.Character.HumanoidRootPart.Position = pathsInput.D.Position
+		task.wait(0.35)
+		player.Character.HumanoidRootPart.Position = pathsInput.Z.Position
 	end
 	task.wait(0.1)
 	player.Character.HumanoidRootPart.Position = ogPosition
-end, {"Lorem Ipsum", "Post-mortem", "Random Number Generation"}, false)
+end, {"Lorem Ipsum", "Post-mortem", "Random Number Generation", "Oracle Attack"}, false)
 
 mainGui:Checkbox(automationTab, infiniSection, "Auto TP Buttons", false, function(state)
 	autoinfini = state
