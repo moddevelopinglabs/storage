@@ -1,6 +1,7 @@
 local Players = game:GetService("Players")
 
-local UILib = require("workspace/x11-colorpicker.lua")
+loadstring(game:HttpGet("https://raw.githubusercontent.com/moddevelopinglabs/storage/refs/heads/main/x11-colorpicker.lua"))()
+repeat task.wait() until UILib
 local hasWTS = type(WorldToScreen) == "function"
 
 print("Loading Secret Universe script!")
