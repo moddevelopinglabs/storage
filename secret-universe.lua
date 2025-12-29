@@ -40,6 +40,7 @@ local autoFarm = false
 local bruteForcerPuth = false
 local autoinfini = false
 local obbyTeleportSpeed = 2
+local bruteForceTeleportSpeed = 0.35
 
 local running = true
 
@@ -48,6 +49,8 @@ local currentPathNumber = 0
 local autoFarmMethod = "Endless Obby"
 
 local lastTeleport = os.clock()
+
+local usedLetters = {}
 
 local pathLetters = {
 	[1] = "S",
@@ -158,6 +161,10 @@ end)
 mainGui:Checkbox(automationTab, puthingSection, "Brute Forcer", false, function(state)
 	bruteForcerPuth = state
 end)
+
+mainGui:Slider(automationTab, puthingSection, 'Teleport Speed', 0.35, function(value)
+	bruteForceTeleportSpeed = value
+end, 0.05, 5, 0.05, ' seconds')
 
 mainGui:Checkbox(otherTab, unloadSection, "Unload", false, function(state)
 	running = false
@@ -300,19 +307,24 @@ while running do
 	if bruteForcerPuth then
 		local currentTime = os.clock()
 
-		if currentTime - lastTeleport >= 0.35 then
+		if currentTime - lastTeleport >= bruteForceTeleportSpeed then
 			if currentPathNumber >= 16 then
 				player.Character.HumanoidRootPart.Position = Vector3.new(171, 112, -115)
 				currentPathNumber = 0
+				usedLetters = {}
+				lastTeleport = currentTime
 			else
 				local randomValue = math.random(1, 16)
 				local pathsInput = workspace.Structures.Paths.InputBricks
-				local position = pathsInput[pathLetters[randomValue]].Position
-				player.Character.HumanoidRootPart.Position = Vector3.new(position.X, position.Y + 2, position.Z)
-				currentPathNumber += 1
+				local part = pathsInput[pathLetters[randomValue]]
+				local position = part.Position
+				if not usedLetters[part.Name] then
+					player.Character.HumanoidRootPart.Position = Vector3.new(position.X, position.Y + 3, position.Z)
+					usedLetters[part.Name] = true
+					currentPathNumber += 1
+					lastTeleport = currentTime
+				end
 			end
-
-			lastTeleport = currentTime
 		end
 	end
 	if coinsESPOn then
