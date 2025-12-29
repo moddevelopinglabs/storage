@@ -240,15 +240,37 @@ local function drawCoin(coin)
 		return
 	end
 
+	local coinValue = string.split(coin.Name, "FloatingCoin_")[2]
+	local drawingColor = Color3.fromRGB(255, 0, 0)
+
+	if coinValue == "10000" then
+		drawingColor = Color3.fromRGB(0, 255, 0)
+	elseif coinValue == "50000" then
+		drawingColor = Color3.fromRGB(255, 215, 0)
+	elseif coinValue == "100000" then
+		drawingColor = Color3.fromRGB(160, 32, 240)
+	elseif coinValue == "1000000" then
+		drawingColor = Color3.fromRGB(255, 255, 0)
+	end
+
 	local square = Drawing.new("Square")
 	square.Filled = true
-	square.Color = Color3.fromRGB(255, 0, 0)
+	square.Color = drawingColor
 	square.Position = drawingPosition
 	square.Size = Vector2.new(10, 10)
 	square.Visible = true
 	square.Corner = 20
 
+	local text = Drawing.new("Text")
+	text.Text = coin.Name
+	text.Color = Color3.fromRGB(255, 255, 255)
+	text.Outline = true
+	text.Center = true
+	text.Visible = true
+	text.Position = Vector2.new(drawingPosition.X, drawingPosition.Y - 20)
+
 	activeSquares[square] = os.clock() + 0.05
+	activeSquares[text] = os.clock() + 0.05
 end
 
 print("Loaded!")
