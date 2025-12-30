@@ -800,7 +800,7 @@ function UILib:CreateSettingsTab(customName)
 
     local menuTheme = self:Section(menuTab, 'Theming')
     local presetThemes = {'X11', 'Nord', 'Dracula', 'Catppuccin'}
-    self:Choice(menuTab, menuTheme, 'Preset theme', {presetThemes[1]}, function (values)
+    self:Choice(menuTab, menuTheme, 'Preset theme', {presetThemes[3]}, function (values)
         local themingItems = self._tree._tabs[#self._tree._tabs]._sections[2]
         local colorAccent = themingItems._items[2]
         local colorBase = themingItems._items[3]
@@ -1770,3 +1770,4 @@ end
 
 return UILib
 -- x11 lib end
+
