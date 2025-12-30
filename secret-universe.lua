@@ -109,6 +109,11 @@ mainGui:Choice(automationTab, secretSection, "Collect Secret", {}, function(valu
 	local ogPosition = player.Character.HumanoidRootPart.Position
 
 	if secretValue == "Lorem Ipsum" then
+		if not workspace.Structures:FindFirstChild("easiest obby on roblox!") then
+			notify("Error", "You need the Foundation secret to use this!", 10)
+			notify("Error", "Click on the baseplate!", 10)
+			return
+		end
 		player.Character.HumanoidRootPart.Position = Vector3.new(12.7, 3, -266)
 		task.wait(0.1)
 		player.Character.HumanoidRootPart.Position = Vector3.new(-39.5, 3, -365)
@@ -121,6 +126,11 @@ mainGui:Choice(automationTab, secretSection, "Collect Secret", {}, function(valu
 		task.wait(0.1)
 		player.Character.HumanoidRootPart.Position = Vector3.new(12.8, 3, -322)
 	elseif secretValue == "Post-mortem" then
+		if not workspace.Structures:FindFirstChild("easiest obby on roblox!") then
+			notify("Error", "You need the Foundation secret to use this!", 10)
+			notify("Error", "Click on the baseplate!", 10)
+			return
+		end
 		player.Character.HumanoidRootPart.Position = Vector3.new(12.7, 3, -266)
 		task.wait(0.1)
 		player.Character.HumanoidRootPart.Position = Vector3.new(-1.3, 3.5, -413)
@@ -130,8 +140,14 @@ mainGui:Choice(automationTab, secretSection, "Collect Secret", {}, function(valu
 		local rainberge = workspace.Terrain:FindFirstChild("Rainberge")
 		if rainberge then
 			player.Character.HumanoidRootPart.Position = rainberge.Position
+		else
+			notify("Error", "No rainberge has spawned yet.", 10)
 		end
 	elseif secretValue == "Oracle Attack" then
+		if not workspace.Structures:FindFirstChild("Paths") then
+			notify("Error", "You need the Transliteration secret to use this!", 10)
+			return
+		end
 		local pathsInput = workspace.Structures.Paths.InputBricks
 		player.Character.HumanoidRootPart.Position = pathsInput.C.Position
 		task.wait(0.35)
@@ -172,6 +188,8 @@ mainGui:Checkbox(otherTab, unloadSection, "Unload", false, function(state)
 end)
 
 mainGui:Checkbox(otherTab, debugSection, "Grab Player Position", false, function(state)
+	local position = player.Character.HumanoidRootPart.Position
+	notify("Player Position", `Current player position is {position.X} {position.Y} {position.Z}`, 10)
 	print("Current player position is", player.Character.HumanoidRootPart.Position)
 end)
 
@@ -245,6 +263,8 @@ local function drawCoin(coin)
 
 	if coinValue == "10000" then
 		drawingColor = Color3.fromRGB(0, 255, 0)
+	elseif coinValue == "25000" then
+		drawingColor = Color3.fromRGB(0, 0, 255)
 	elseif coinValue == "50000" then
 		drawingColor = Color3.fromRGB(255, 215, 0)
 	elseif coinValue == "100000" then
@@ -287,18 +307,25 @@ while running do
 			local currentTime = os.clock()
 
 			if currentTime - lastTeleport >= obbyTeleportSpeed then
-				local stage = workspace.Structures["Endless Obby"].Stages[obbyStage]
+				local endlessObby = workspace.Structures:FindFirstChild("Endless Obby")
 
-				if stage then
-					local position = stage.Finish.Position
-					player.Character.HumanoidRootPart.Position = Vector3.new(position.X, position.Y + 2, position.Z)
-					obbyStage += 1
-				else
-					if obbyStage ~= 0 then
-						obbyStage -= 1
+				if endlessObby then
+					local stage = endlessObby.Stages[obbyStage]
+
+					if stage then
+						local position = stage.Finish.Position
+						player.Character.HumanoidRootPart.Position = Vector3.new(position.X, position.Y + 2, position.Z)
+						obbyStage += 1
 					else
-						player.Character.HumanoidRootPart.Position = Vector3.new(270, 3, 0)
+						if obbyStage ~= 0 then
+							obbyStage -= 1
+						else
+							player.Character.HumanoidRootPart.Position = Vector3.new(270, 3, 0)
+						end
 					end
+				else
+					notify("Error", "You need the Lorem Ipsum secret to use this!", 10)
+					notify("Error", "Use collect secret!", 10)
 				end
 				lastTeleport = currentTime
 			end
