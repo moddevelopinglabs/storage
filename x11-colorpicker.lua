@@ -834,6 +834,11 @@ function UILib:CreateSettingsTab(customName)
             colorOuterStroke.value = {63, 62, 80}
             colorCrust.value = {33, 32, 44}
         end
+        colorAccent.value = {135, 206, 235}
+        colorBase.value = {49, 54, 60}
+        colorInnerStroke.value = {72, 80, 90}
+        colorOuterStroke.value = {61, 66, 73}
+        colorCrust.value = {88, 96, 106}
 
         colorAccent.callback(Color3.fromRGB(unpack(colorAccent.value)))
         colorBase.callback(Color3.fromRGB(unpack(colorBase.value)))
@@ -1770,4 +1775,5 @@ end
 
 return UILib
 -- x11 lib end
+
 
