@@ -800,7 +800,7 @@ function UILib:CreateSettingsTab(customName)
 
     local menuTheme = self:Section(menuTab, 'Theming')
     local presetThemes = {'X11', 'Nord', 'Dracula', 'Catppuccin'}
-    self:Choice(menuTab, menuTheme, 'Preset theme', {presetThemes[3]}, function (values)
+    self:Choice(menuTab, menuTheme, 'Preset theme', {presetThemes[1]}, function (values)
         local themingItems = self._tree._tabs[#self._tree._tabs]._sections[2]
         local colorAccent = themingItems._items[2]
         local colorBase = themingItems._items[3]
@@ -834,11 +834,6 @@ function UILib:CreateSettingsTab(customName)
             colorOuterStroke.value = {63, 62, 80}
             colorCrust.value = {33, 32, 44}
         end
-        colorAccent.value = {135, 206, 235}
-        colorBase.value = {49, 54, 60}
-        colorInnerStroke.value = {72, 80, 90}
-        colorOuterStroke.value = {61, 66, 73}
-        colorCrust.value = {88, 96, 106}
 
         colorAccent.callback(Color3.fromRGB(unpack(colorAccent.value)))
         colorBase.callback(Color3.fromRGB(unpack(colorBase.value)))
@@ -1775,5 +1770,3 @@ end
 
 return UILib
 -- x11 lib end
-
-
