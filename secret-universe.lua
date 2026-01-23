@@ -1,3 +1,5 @@
+local version = "1.1"
+
 local Players = game:GetService("Players")
 
 loadstring(game:HttpGet("https://raw.githubusercontent.com/moddevelopinglabs/storage/refs/heads/main/x11-colorpicker.lua"))()
@@ -18,7 +20,7 @@ local function getPing(raw)
 	return ("Ping: %sms"):format(math.floor(ping))
 end
 
-local mainGui = UILib.new("Secret Universe", Vector2.new(320, 380), {getPing})
+local mainGui = UILib.new(`Secret Universe | Version {version}`, Vector2.new(320, 380), {getPing})
 
 local player = Players.LocalPlayer
 
@@ -33,6 +35,7 @@ local infiniSection = mainGui:Section(automationTab, "Infinitower")
 local puthingSection = mainGui:Section(automationTab, "Puthing Around")
 local unloadSection = mainGui:Section(otherTab, "Unload")
 local debugSection = mainGui:Section(otherTab, "Debug")
+local infoSection = mainGui:Section(otherTab, "Info")
 mainGui:CreateSettingsTab()
 
 local coinsESPOn = false
@@ -194,6 +197,12 @@ mainGui:Checkbox(otherTab, debugSection, "Grab Player Position", false, function
 	print("Current player position is", player.Character.HumanoidRootPart.Position)
 end)
 
+mainGui:Checkbox(otherTab, infoSection, `Version {version}`, false, function(state)
+end)
+
+mainGui:Checkbox(otherTab, infoSection, "Some settings might get you on a leaderboard, be careful!", false, function(state)
+end)
+
 local function resetValues()
 	obbyStage = 0
 end
@@ -260,6 +269,27 @@ local function cacheInvalid()
 		end
 	end
 	return false
+end
+
+local function deleteInactiveSquares(group)
+	local now = os.clock()
+	for square, theTable in pairs(activeSquares) do
+		if theTable.Group == group then
+			if now >= theTable.ExpireTime then
+				square:Remove()
+				activeSquares[square] = nil
+			end
+		end
+	end
+end
+
+local function deleteSquares(group)
+	for square, theTable in pairs(activeSquares) do
+		if theTable.Group == group then
+			square:Remove()
+			activeSquares[square] = nil
+		end
+	end
 end
 
 local function drawPart(part, name, color, group)
@@ -404,22 +434,9 @@ while running do
 		end
 
 		-- cleanup expired squares
-		local now = os.clock()
-		for square, theTable in pairs(activeSquares) do
-			if theTable.Group == "Coins" then
-				if now >= theTable.ExpireTime then
-					square:Remove()
-					activeSquares[square] = nil
-				end
-			end
-		end
+		deleteInactiveSquares("Coins")
 	else
-		for square, theTable in pairs(activeSquares) do
-			if theTable.Group == "Coins" then
-				square:Remove()
-				activeSquares[square] = nil
-			end
-		end
+		deleteSquares("Coins")
 	end
 	if structuresESPOn then
 		-- draw structures
@@ -428,22 +445,9 @@ while running do
 		end
 
 		-- cleanup expired squares
-		local now = os.clock()
-		for square, theTable in pairs(activeSquares) do
-			if theTable.Group == "Structures" then
-				if now >= theTable.ExpireTime then
-					square:Remove()
-					activeSquares[square] = nil
-				end
-			end
-		end
+		deleteInactiveSquares("Structures")
 	else
-		for square, theTable in pairs(activeSquares) do
-			if theTable.Group == "Structures" then
-				square:Remove()
-				activeSquares[square] = nil
-			end
-		end
+		deleteSquares("Structures")
 	end
 	if player.Character then
 		local character = player.Character
