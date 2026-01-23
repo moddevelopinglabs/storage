@@ -36,6 +36,7 @@ local debugSection = mainGui:Section(otherTab, "Debug")
 mainGui:CreateSettingsTab()
 
 local coinsESPOn = false
+local structuresESPOn = false
 
 local autoFarm = false
 local bruteForcerPuth = false
@@ -197,19 +198,6 @@ local function resetValues()
 	obbyStage = 0
 end
 
-local function WorldToScreen_Safe(pos)
-	if not hasWTS then
-		return
-	end
-	local ok, res = pcall(function()
-		return WorldToScreen(pos)
-	end)
-	if ok then
-		return res
-	end
-	return
-end
-
 local function indexCoins()
 	local coins = {}
 	for _, part in workspace:GetDescendants() do
@@ -232,12 +220,34 @@ local function indexCoins()
 	return coins
 end
 
+local function indexStructures()
+	local structures = {}
+	for _, folder in workspace.Structures:GetChildren() do
+		for _, part in folder:GetChildren() do
+			if not part:IsA("BasePart") then
+				continue
+			end
+
+			if part.Name == "CameraPos" then
+				structures[part] = part
+			end
+		end
+	end
+	return structures
+end
+
 local activeSquares = {} -- [Drawing] = expireTime
 local cachedCoins = indexCoins()
+local cachedStructures = indexStructures()
 
 mainGui:Checkbox(visualsTab, espSection, "Coins", false, function(state)
 	cachedCoins = indexCoins()
 	coinsESPOn = state
+end)
+
+mainGui:Checkbox(visualsTab, espSection, "Structures", false, function(state)
+	cachedStructures = indexStructures()
+	structuresESPOn = state
 end)
 
 local function cacheInvalid()
@@ -252,45 +262,38 @@ local function cacheInvalid()
 	return false
 end
 
-local function drawCoin(coin)
-	local drawingPosition = WorldToScreen_Safe(coin.Position)
-	if not drawingPosition then
+local function drawPart(part, name, color, group)
+	local drawingPosition, isShown = WorldToScreen(part.Position)
+	if not drawingPosition or not isShown then
 		return
-	end
-
-	local coinValue = string.split(coin.Name, "FloatingCoin_")[2]
-	local drawingColor = Color3.fromRGB(255, 0, 0)
-
-	if coinValue == "10000" then
-		drawingColor = Color3.fromRGB(0, 255, 0)
-	elseif coinValue == "25000" then
-		drawingColor = Color3.fromRGB(0, 0, 255)
-	elseif coinValue == "50000" then
-		drawingColor = Color3.fromRGB(255, 215, 0)
-	elseif coinValue == "100000" then
-		drawingColor = Color3.fromRGB(160, 32, 240)
-	elseif coinValue == "1000000" then
-		drawingColor = Color3.fromRGB(255, 255, 0)
 	end
 
 	local square = Drawing.new("Square")
 	square.Filled = true
-	square.Color = drawingColor
+	square.Color = color
 	square.Position = drawingPosition
 	square.Size = Vector2.new(10, 10)
 	square.Visible = true
 	square.Corner = 20
 
 	local text = Drawing.new("Text")
-	text.Text = coin.Name
+	text.Text = name
 	text.Color = Color3.fromRGB(255, 255, 255)
 	text.Outline = true
 	text.Center = true
 	text.Visible = true
 	text.Position = Vector2.new(drawingPosition.X, drawingPosition.Y - 20)
 
-	activeSquares[square] = os.clock() + 0.05
-	activeSquares[text] = os.clock() + 0.05
+	activeSquares[square] = {
+		ExpireTime = os.clock() + 0.05,
+		Part = part,
+		Group = group
+	}
+	activeSquares[text] = {
+		ExpireTime = os.clock() + 0.05,
+		Part = part,
+		Group = group
+	}
 end
 
 print("Loaded!")
@@ -383,21 +386,63 @@ while running do
 		end
 		-- draw coins
 		for _, coin in cachedCoins do
-			drawCoin(coin)
+			local coinValue = string.split(coin.Name, "FloatingCoin_")[2]
+			local drawingColor = Color3.fromRGB(255, 0, 0)
+
+			if coinValue == "10000" then
+				drawingColor = Color3.fromRGB(0, 255, 0)
+			elseif coinValue == "25000" then
+				drawingColor = Color3.fromRGB(0, 0, 255)
+			elseif coinValue == "50000" then
+				drawingColor = Color3.fromRGB(255, 215, 0)
+			elseif coinValue == "100000" then
+				drawingColor = Color3.fromRGB(160, 32, 240)
+			elseif coinValue == "1000000" then
+				drawingColor = Color3.fromRGB(255, 255, 0)
+			end
+			drawPart(coin, coin.Name, drawingColor, "Coins")
 		end
 
 		-- cleanup expired squares
 		local now = os.clock()
-		for square, expireTime in pairs(activeSquares) do
-			if now >= expireTime then
+		for square, theTable in pairs(activeSquares) do
+			if theTable.Group == "Coins" then
+				if now >= theTable.ExpireTime then
+					square:Remove()
+					activeSquares[square] = nil
+				end
+			end
+		end
+	else
+		for square, theTable in pairs(activeSquares) do
+			if theTable.Group == "Coins" then
 				square:Remove()
 				activeSquares[square] = nil
 			end
 		end
+	end
+	if structuresESPOn then
+		-- draw structures
+		for _, structure in cachedStructures do
+			drawPart(structure, structure.Parent.Name, Color3.fromRGB(255, 255, 255), "Structures")
+		end
+
+		-- cleanup expired squares
+		local now = os.clock()
+		for square, theTable in pairs(activeSquares) do
+			if theTable.Group == "Structures" then
+				if now >= theTable.ExpireTime then
+					square:Remove()
+					activeSquares[square] = nil
+				end
+			end
+		end
 	else
-		for square, _ in pairs(activeSquares) do
-			square:Remove()
-			activeSquares[square] = nil
+		for square, theTable in pairs(activeSquares) do
+			if theTable.Group == "Structures" then
+				square:Remove()
+				activeSquares[square] = nil
+			end
 		end
 	end
 	if player.Character then
