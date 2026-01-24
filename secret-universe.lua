@@ -1,4 +1,4 @@
-local version = "1.1"
+local version = "1.1b"
 
 local Players = game:GetService("Players")
 
@@ -33,6 +33,7 @@ local teleportSection = mainGui:Section(automationTab, "Teleports")
 local secretSection = mainGui:Section(automationTab, "Secrets")
 local infiniSection = mainGui:Section(automationTab, "Infinitower")
 local puthingSection = mainGui:Section(automationTab, "Puthing Around")
+local otherSection = mainGui:Section(otherTab, "Other")
 local unloadSection = mainGui:Section(otherTab, "Unload")
 local debugSection = mainGui:Section(otherTab, "Debug")
 local infoSection = mainGui:Section(otherTab, "Info")
@@ -186,6 +187,18 @@ end)
 mainGui:Slider(automationTab, puthingSection, 'Teleport Speed', 0.35, function(value)
 	bruteForceTeleportSpeed = value
 end, 0.05, 5, 0.05, ' seconds')
+
+mainGui:Checkbox(otherTab, otherSection, "Force Reset", false, function(state)
+	local OFFSET = 0x18C
+
+	local humanoid = player.Character.Humanoid
+	local addr = humanoid.Address
+
+
+	local v = Vector3.new(0, 0, 0)
+
+	memory_write("float", addr + OFFSET + 8, v.Z)
+end)
 
 mainGui:Checkbox(otherTab, unloadSection, "Unload", false, function(state)
 	running = false
